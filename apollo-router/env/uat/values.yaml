@@ -2,10 +2,12 @@ environment: uat
 applicationImageVer: 2.8.0
 
 identity:
+  enabled: false
   name: tis-apollo-router-id
   clientID: cf12bf52-a3da-4cbb-baa0-b4c22b6c092f
   resourceID: /subscriptions/9457f181-b256-4a82-b7ed-390fab40e45e/resourceGroups/rg-demo/providers/Microsoft.ManagedIdentity/userAssignedIdentities/tis-apollo-router-id
 secrets:
+  enabled: false
   azure:
     keyvault: uat-jrdn-kv
     tenantID: 93004b47-238e-4ef7-b9f7-8085640be5b8
