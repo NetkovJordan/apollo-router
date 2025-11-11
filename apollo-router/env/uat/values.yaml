@@ -17,7 +17,7 @@ azureStorage:
   accountName: uatjrdnstorage
   containerName: supergraph
 
-# Service configuration
+# Service configurations
 service:
   type: ClusterIP
   port: 80
