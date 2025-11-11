@@ -1,3 +1,4 @@
+{{- if .Values.azureStorage.enabled -}}
 apiVersion: "aadpodidentity.k8s.io/v1"
 kind: AzureIdentity
 metadata:
@@ -16,3 +17,5 @@ metadata:
 spec:
   azureIdentity: {{ .Values.applicationName }}-id
   selector: {{ .Values.applicationName }}-id
+
+{{- end }}
