@@ -52,6 +52,10 @@ spec:
               mountPath: /app/configuration.yaml
               subPath: configuration.yaml
               readOnly: true
+            - name: supergraph-config
+              mountPath: /mnt/supergraph/supergraph.graphql
+              subPath: supergraph.graphql
+              readOnly: true
 
           livenessProbe:
             httpGet:
@@ -75,3 +79,6 @@ spec:
         - name: router-config
           configMap:
             name: {{ .Values.applicationName }}-config
+        - name: supergraph-config
+          configMap:
+            name: {{ .Values.applicationName }}-supergraph

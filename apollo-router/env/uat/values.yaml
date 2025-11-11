@@ -73,7 +73,7 @@ applicationHealthProbe:
 
 # Application specific configuration
 applicationConfiguration:
-  APOLLO_ROUTER_SUPERGRAPH_PATH: /mnt/azure/supergraph.graphql
+  APOLLO_ROUTER_SUPERGRAPH_PATH: /mnt/supergraph/supergraph.graphql
   APOLLO_ROUTER_LOG: info
 
 # Router-specific configuration
