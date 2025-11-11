@@ -1,0 +1,7 @@
+# Helm Values file, for best practices, visit https://helm.sh/docs/chart_best_practices/values/
+# Used to store common configurations shared among different environments
+applicationName: tis-apollo-router
+applicationImage: tisui.azurecr.io/tis-apollo-router
+#imagePullSecrets: registry-secret
+#containerPort: 8080
+servicePort: 80

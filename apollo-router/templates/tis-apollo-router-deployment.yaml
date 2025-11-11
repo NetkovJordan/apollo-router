@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.applicationName }}-deployment
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.applicationName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.applicationName }}
+        aadpodidbinding: {{ .Values.applicationName }}-id
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/" $.Values.applicationName "-configmap.yaml") . | sha256sum }}
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.applicationName }}
+          image: {{ .Values.applicationImageConfig.router.registry }}/{{ .Values.applicationImageConfig.router.repository }}:{{ .Values.applicationImageVer }}
+          imagePullPolicy: {{ .Values.applicationImageConfig.router.pullPolicy }}
+          {{- with .Values.router.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPorts.http }}
+              protocol: TCP
+            - name: health
+              containerPort: {{ .Values.containerPorts.health }}
+              protocol: TCP
+          env:
+            - name: APOLLO_ROUTER_SUPERGRAPH_PATH
+              value: {{ .Values.applicationConfiguration.APOLLO_ROUTER_SUPERGRAPH_PATH }}
+            - name: APOLLO_ROUTER_LOG
+              value: {{ .Values.applicationConfiguration.APOLLO_ROUTER_LOG }}
+          resources:
+            requests:
+              memory: {{ .Values.applicationResources.router.memory_request }}
+              cpu: {{ .Values.applicationResources.router.cpu_request }}
+            limits:
+              memory: {{ .Values.applicationResources.router.memory_limit }}
+              cpu: {{ .Values.applicationResources.router.cpu_limit }}
+          volumeMounts:
+            - name: router-config
+              mountPath: /app/configuration.yaml
+              subPath: configuration.yaml
+              readOnly: true
+
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.applicationHealthProbe.router.liveness.path }}
+              port: {{ .Values.applicationHealthProbe.router.liveness.port }}
+            initialDelaySeconds: {{ .Values.applicationHealthProbe.router.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.applicationHealthProbe.router.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.applicationHealthProbe.router.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.applicationHealthProbe.router.liveness.failureThreshold }}
+            successThreshold: {{ .Values.applicationHealthProbe.router.liveness.successThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.applicationHealthProbe.router.readiness.path }}
+              port: {{ .Values.applicationHealthProbe.router.readiness.port }}
+            initialDelaySeconds: {{ .Values.applicationHealthProbe.router.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.applicationHealthProbe.router.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.applicationHealthProbe.router.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.applicationHealthProbe.router.readiness.failureThreshold }}
+            successThreshold: {{ .Values.applicationHealthProbe.router.readiness.successThreshold }}
+      volumes:
+        - name: router-config
+          configMap:
+            name: {{ .Values.applicationName }}-config

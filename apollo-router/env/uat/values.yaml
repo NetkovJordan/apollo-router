@@ -1,0 +1,111 @@
+environment: uat
+applicationImageVer: 2.8.0
+
+identity:
+  name: tis-apollo-router-id
+  clientID: cf12bf52-a3da-4cbb-baa0-b4c22b6c092f
+  resourceID: /subscriptions/9457f181-b256-4a82-b7ed-390fab40e45e/resourceGroups/rg-demo/providers/Microsoft.ManagedIdentity/userAssignedIdentities/tis-apollo-router-id
+secrets:
+  azure:
+    keyvault: uat-jrdn-kv
+    tenantID: 93004b47-238e-4ef7-b9f7-8085640be5b8
+
+azureStorage:
+  enabled: false
+  accountName: uatjrdnstorage
+  containerName: supergraph
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  annotations: 
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "metrics"
+    prometheus.io/path: "/metrics"
+
+# Container ports
+containerPorts:
+  http: 4000
+  health: 8088
+  metrics: 9090
+# Replica configuration
+replicaCount: 2
+
+# Image configuration
+applicationImageConfig:
+  router:
+    registry: uatjrdnacr.azurecr.io
+    repository: tis-apollo-router
+    pullPolicy: IfNotPresent
+
+# Resource configuration
+applicationResources:
+  router:
+    memory_request: 256Mi
+    memory_limit: 512Mi
+    cpu_request: 250m
+    cpu_limit: 500m
+
+# Health probe configuration
+applicationHealthProbe:
+  router:
+    liveness:
+      path: "/health?live"
+      port: "health"
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readiness:
+      path: "/health?ready"
+      port: "health"
+      enabled: true
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+
+# Application specific configuration
+applicationConfiguration:
+  APOLLO_ROUTER_SUPERGRAPH_PATH: /mnt/azure/supergraph.graphql
+  APOLLO_ROUTER_LOG: info
+
+# Router-specific configuration
+router:
+  configuration:
+    supergraph:
+      listen: 0.0.0.0:4000
+      introspection: true
+    health_check:
+      listen: 0.0.0.0:8088
+    sandbox:
+      enabled: true
+    homepage:
+      enabled: false
+
+  args:
+    - --config
+    - /app/configuration.yaml
+    - --hot-reload
+
+ingress:
+  enabled: true
+  ingressClass: nginx
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    
+  hosts:
+    - host: router.azuredev.site
+      paths:
+        - path: /
+          pathType: Prefix
+
+  tls:
+    - secretName: router-tls
+      hosts:
+        - router.azuredev.site

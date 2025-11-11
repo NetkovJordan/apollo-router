@@ -1,0 +1,18 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: {{ .Values.applicationName }}-id
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: 0
+  resourceID: {{ .Values.identity.resourceID }}
+  clientID: {{ .Values.identity.clientID }}
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: {{ .Values.applicationName }}-id-binding
+  namespace: {{ .Release.Namespace }}
+spec:
+  azureIdentity: {{ .Values.applicationName }}-id
+  selector: {{ .Values.applicationName }}-id

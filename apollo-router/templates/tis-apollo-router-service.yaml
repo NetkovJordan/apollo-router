@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.applicationName }}-service
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPorts.http}}
+      protocol: TCP
+      name: http
+    - port: {{ .Values.containerPorts.health }}
+      targetPort: 8088
+      protocol: TCP
+      name: health
+    - port: {{ .Values.containerPorts.metrics }}
+      targetPort: {{ .Values.containerPorts.metrics }}
+      protocol: TCP
+      name: metrics
+  selector:
+    app: {{ .Values.applicationName }}
+
+

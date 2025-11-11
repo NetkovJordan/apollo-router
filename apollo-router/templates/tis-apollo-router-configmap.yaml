@@ -1,0 +1,16 @@
+{{- if .Values.router.configuration }}
+{{- $routerFullName := .Values.applicationName -}}
+{{- $configuration := dict }}
+{{- $telemetry := dict "exporters" (dict "metrics" (dict "common" (dict "resource" (dict "service.name" $routerFullName)))) -}}
+{{- $_ := set $configuration "telemetry" $telemetry -}}
+{{- $_ := mustMergeOverwrite $configuration .Values.router.configuration -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.applicationName }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  configuration.yaml: |
+    {{- toYaml $configuration | nindent 4 }}
+{{- end }}
