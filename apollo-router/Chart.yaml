@@ -1,5 +1,5 @@
 apiVersion: v2
-name: tis-apollo-router
+name: apollo-router
 description: A Helm chart for Apollo Router deployment
 
 # Note: Do not make changes to this document *unless* you are creating a router
