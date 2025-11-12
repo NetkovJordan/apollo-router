@@ -15,6 +15,7 @@ spec:
         aadpodidbinding: {{ .Values.applicationName }}-id
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/" $.Values.applicationName "-configmap.yaml") . | sha256sum }}
+        checksum/supergraph: {{ include (print $.Template.BasePath "/" $.Values.applicationName "-supergraph-configmap.yaml") . | sha256sum }}
     spec:
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
