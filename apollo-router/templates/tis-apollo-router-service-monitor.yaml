@@ -1,0 +1,17 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: {{ .Values.applicationName }}-servicemonitor
+    namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - path: {{  .Values.router.configuration.telemetry.exporters.metrics.prometheus.endpoint }}
+    port: metrics
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+        app: {{ .Values.applicationName }}
+{{- end }}
