@@ -88,8 +88,9 @@ router:
       exporters:
         metrics:
           prometheus:
-            port: 9090
-            endpoint: /metrics
+            enabled: true
+            listen: 0.0.0.0:9090
+            path: /metrics
 
   args:
     - --config
