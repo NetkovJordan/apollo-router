@@ -21,10 +21,6 @@ azureStorage:
 service:
   type: ClusterIP
   port: 80
-  annotations: 
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "metrics"
-    prometheus.io/path: "/metrics"
 
 # Container ports
 containerPorts:
@@ -88,6 +84,12 @@ router:
       enabled: true
     homepage:
       enabled: false
+    telemetry:
+      exporters:
+        metrics:
+          prometheus:
+            port: 9090
+            endpoint: /metrics
 
   args:
     - --config
@@ -111,3 +113,7 @@ ingress:
     - secretName: router-tls
       hosts:
         - router.azuredev.site
+
+serviceMonitor:
+  enabled: true
+ 
