@@ -36,6 +36,9 @@ spec:
             - name: health
               containerPort: {{ .Values.containerPorts.health }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.containerPorts.metrics }}
+              protocol: TCP
           env:
             - name: APOLLO_ROUTER_SUPERGRAPH_PATH
               value: {{ .Values.applicationConfiguration.APOLLO_ROUTER_SUPERGRAPH_PATH }}
