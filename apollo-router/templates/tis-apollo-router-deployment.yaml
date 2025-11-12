@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: {{ .Values.applicationName }}-deployment
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.applicationName }}
 spec:
   replicas: {{ .Values.replicaCount | default 1 }}
   selector:
