@@ -38,7 +38,6 @@ data:
     
     enum join__Graph {
       HEROES @join__graph(name: "heroes", url: "http://heroes-service-service.apollo.svc.cluster.local:4001/")
-      MISSIONS @join__graph(name: "missions", url: "http://missions-service-service.apollo.svc.cluster.local:4002/")
     }
     
     scalar link__Import
@@ -55,18 +54,8 @@ data:
       EXECUTION
     }
     
-    type Mission
-      @join__type(graph: MISSIONS, key: "id")
-    {
-      id: ID!
-      name: String!
-      difficulty: String!
-    }
-    
     type Query
       @join__type(graph: HEROES)
-      @join__type(graph: MISSIONS)
     {
-      heroes: [Hero!]! @join__field(graph: HEROES)
-      missions: [Mission!]! @join__field(graph: MISSIONS)
+      heroes: [Hero!]!
     }
